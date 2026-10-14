@@ -1,6 +1,7 @@
 import React from 'react';
 import {Easing, Img, interpolate, staticFile, useCurrentFrame, useVideoConfig} from 'remotion';
 import {makeCue} from '../cue';
+import {Doodle, focus, scribbleCircle, unfocus} from '../fx';
 import {C, F} from '../theme';
 import {Chip, Cursor, night, paper, Portrait, Saber, SaberDefs, SceneProps, Select, Shell, Title, useEnter} from '../ui';
 
@@ -211,7 +212,17 @@ export const Hero: React.FC<SceneProps> = ({vo, a, audio, dur}) => {
   );
 
   return (
-    <Shell index={4} label="Hero XP lane" audio={audio} dur={dur}>
+    <Shell
+      vo={vo}
+      index={4}
+      label="Hero XP lane"
+      audio={audio}
+      dur={dur}
+      cam={{
+        keys: [focus(tBan, 560, 600, 1.06, 0.5), unfocus(tPick - 4)],
+        hits: [{f: tDua, amp: 10}, {f: tBan, amp: 18, flash: true}, {f: tPick, amp: 10}, {f: tSurvey, amp: 14}],
+      }}
+    >
       <Title text="Hero XP lane" />
       <div style={{position: 'absolute', left: 120, top: 262, display: 'flex', gap: 16}}>
         <Chip text="DATA: MLBB HUB" start={tData} bg={C.ink} size={22} />
@@ -244,13 +255,14 @@ export const Hero: React.FC<SceneProps> = ({vo, a, audio, dur}) => {
       </div>
       {swap > 0.02 ? <Slope start={tBan - 4} banStart={tBan + 70} /> : null}
 
+      <Doodle d={scribbleCircle(1634, 500, 180, 50)} start={tBan + 84} dur={22} color={C.coral} width={7} />
       {swap > 0.5 ? <Select left={106} top={648} width={470} height={70} start={tBan + 28} color={C.coral} /> : null}
       <Cursor from={[760, 900]} to={[576, 718]} start={tBan + 22} />
-      <div style={{position: 'absolute', left: 120, top: 960, display: 'flex', gap: 16}}>
+      <div style={{position: 'absolute', left: 120, top: 830, display: 'flex', gap: 16}}>
         <Chip text="1 HERO UTAMA" start={tPick} bg={C.violet} size={28} />
         <Chip text="+ 1 CADANGAN" start={tPick + 10} bg={C.teal} size={28} />
       </div>
-      <div style={{position: 'absolute', right: 120, top: 972, fontFamily: F.sans, fontSize: 24, color: C.muted, opacity: note, transform: `translateY(${(1 - note) * 12}px)`}}>
+      <div style={{position: 'absolute', left: 120, top: 905, fontFamily: F.sans, fontSize: 24, color: C.muted, opacity: note, transform: `translateY(${(1 - note) * 12}px)`}}>
         Angka campuran semua lane, bukan khusus XP lane.
       </div>
       <div

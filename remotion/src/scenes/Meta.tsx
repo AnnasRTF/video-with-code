@@ -1,6 +1,7 @@
 import React from 'react';
 import {Easing, Img, staticFile, useCurrentFrame, useVideoConfig} from 'remotion';
 import {makeCue} from '../cue';
+import {BigWord, focus, unfocus} from '../fx';
 import {PIT} from '../mapdata';
 import {C, F} from '../theme';
 import {Chip, Cursor, MapPanel, paper, Portrait, ramp, Saber, SaberDefs, SceneProps, Select, Shell, Sticker, Strike, Title, Tower, useEnter} from '../ui';
@@ -60,7 +61,17 @@ export const Meta: React.FC<SceneProps> = ({vo, a, audio, dur}) => {
   const wisp = ramp(frame, tW + 8, tW + 50);
 
   return (
-    <Shell index={3} label="Meta Season 42" audio={audio} dur={dur}>
+    <Shell
+      vo={vo}
+      index={3}
+      label="Meta Season 42"
+      audio={audio}
+      dur={dur}
+      cam={{
+        keys: [focus(tM, 1400, 590, 1.07, 0.5), unfocus(tMap - 2)],
+        hits: [{f: tM, amp: 14}, {f: tRip, amp: 18, flash: true}, {f: tMap, amp: 12}, {f: tH, amp: 10}, {f: tG, amp: 10}, {f: tW, amp: 10}, {f: tTr, amp: 14}],
+      }}
+    >
       <Title text="Meta Season 42" />
 
       {seasonOut < 1 ? <Select left={160} top={660} width={430} height={130} start={tS + 30} color={C.accent} /> : null}
@@ -193,8 +204,9 @@ export const Meta: React.FC<SceneProps> = ({vo, a, audio, dur}) => {
         fg="#fff"
         rotate={-4}
         size={46}
-        style={{left: 330, top: 905, opacity: 1 - ramp(frame, tTr + 60, tTr + 76)}}
+        style={{left: 620, top: 790, opacity: 1 - ramp(frame, tTr + 60, tTr + 76)}}
       />
+      <BigWord text="RIP." start={tRip} dur={26} color="#7A7F94" size={300} top={340} />
     </Shell>
   );
 };

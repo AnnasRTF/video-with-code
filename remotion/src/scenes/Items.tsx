@@ -1,6 +1,7 @@
 import React from 'react';
 import {Easing, Img, staticFile, useCurrentFrame, useVideoConfig} from 'remotion';
 import {makeCue} from '../cue';
+import {focus, unfocus} from '../fx';
 import {C, F} from '../theme';
 import {Chip, Cursor, Float, Marquee, night, paper, ramp, RiseText, Saber, SaberDefs, SceneProps, Shell, Slash, Sticker, Title, useEnter} from '../ui';
 
@@ -184,7 +185,17 @@ export const Items: React.FC<SceneProps> = ({vo, a, audio, dur}) => {
   const intro = 1 - ramp(frame, tFisik - 8, tFisik + 10);
   const slash = ramp(frame, tSesuai - 6, tSesuai + 12, Easing.inOut(Easing.cubic));
   return (
-    <Shell index={7} label="Item" audio={audio} dur={dur}>
+    <Shell
+      vo={vo}
+      index={7}
+      label="Item"
+      audio={audio}
+      dur={dur}
+      cam={{
+        keys: [focus(tFisik + 16, 380, 620, 1.12, 0.55), focus(tSihir + 16, 960, 620, 1.12, 0.55), focus(tHeal + 16, 1540, 620, 1.12, 0.55), unfocus(tAudit - 10)],
+        hits: [{f: tSesuai, amp: 20, flash: true}, {f: tFisik, amp: 10}, {f: tSihir, amp: 10}, {f: tHeal, amp: 10}, {f: tAudit, amp: 14}],
+      }}
+    >
       <Title text="Item: sesuai lawan" />
       {intro > 0.01 ? (
         <div style={{position: 'absolute', left: 120, top: 360, opacity: intro, transform: `translateY(${(1 - intro) * -40}px)`}}>

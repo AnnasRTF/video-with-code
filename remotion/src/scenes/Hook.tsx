@@ -1,6 +1,7 @@
 import React from 'react';
 import {Easing, useCurrentFrame, useVideoConfig} from 'remotion';
 import {makeCue} from '../cue';
+import {BigWord, focus, unfocus} from '../fx';
 import {C, F} from '../theme';
 import {Chip, Cursor, Marquee, paper, ramp, RiseText, Saber, SaberDefs, SceneProps, Select, Shell, Sticker, useEnter} from '../ui';
 
@@ -40,7 +41,18 @@ export const Hook: React.FC<SceneProps> = ({vo, a, audio, dur}) => {
   const underline = ramp(frame, tTitle + 14, tTitle + 40, Easing.inOut(Easing.cubic));
 
   return (
-    <Shell index={1} label="Hook" audio={audio} dur={dur} blobs="bold">
+    <Shell
+      vo={vo}
+      index={1}
+      label="Hook"
+      audio={audio}
+      dur={dur}
+      blobs="bold"
+      cam={{
+        keys: [focus(tIn + 6, 520, 430, 1.07), unfocus(tPoster - 4)],
+        hits: [{f: tLv, amp: 20, flash: true}, {f: tTurtle, amp: 12}, {f: tTurret, amp: 12}, {f: tIlang, amp: 16, flash: true}, {f: tTitle, amp: 24, flash: true}],
+      }}
+    >
       {/* fase A: skor dan chat */}
       <div style={{opacity: phaseA}}>
         <div style={{...paper, position: 'absolute', left: 120, top: 250, width: 860, height: 340, opacity: board, transform: `translateY(${(1 - board) * 50}px)`}}>
@@ -145,6 +157,7 @@ export const Hook: React.FC<SceneProps> = ({vo, a, audio, dur}) => {
       <div style={{position: 'absolute', left: 0, right: 0, top: 860, display: 'flex', justifyContent: 'center'}}>
         <Chip text="DENGERIN SAMPAI HABIS" start={tSkip} bg={C.violet} size={34} />
       </div>
+      <BigWord text="LEVEL 4?!" start={tLv} dur={26} color={C.coral} size={230} top={400} />
     </Shell>
   );
 };

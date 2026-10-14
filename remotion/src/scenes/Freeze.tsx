@@ -1,6 +1,7 @@
 import React from 'react';
 import {Easing, Img, interpolate, staticFile, useCurrentFrame, useVideoConfig} from 'remotion';
 import {makeCue} from '../cue';
+import {BigWord, focus, unfocus} from '../fx';
 import {C, F} from '../theme';
 import {Check, Chip, Cursor, night, paper, ramp, Saber, SaberDefs, SceneProps, Select, Shell, Sticker, Title, Tower, useEnter} from '../ui';
 
@@ -59,7 +60,17 @@ export const Freeze: React.FC<SceneProps> = ({vo, a, audio, dur}) => {
   }));
 
   return (
-    <Shell index={8} label="Farming dan freeze" audio={audio} dur={dur}>
+    <Shell
+      vo={vo}
+      index={8}
+      label="Farming dan freeze"
+      audio={audio}
+      dur={dur}
+      cam={{
+        keys: [focus(tTime, 680, 620, 1.05, 0.4), focus(tPush, 980, 560, 1.07, 0.5), unfocus(tLeft - 6)],
+        hits: [{f: tFreeze, amp: 14}, {f: tCannon, amp: 12}, {f: tPush, amp: 14}, {f: tProyek, amp: 18, flash: true}],
+      }}
+    >
       <Title text="Farming dan freeze" />
       <div style={{...night, position: 'absolute', left: 120, top: 310, width: 1130, height: 620, opacity: panel, transform: `translateY(${(1 - panel) * 70}px)`}}>
         <svg width={1130} height={620} style={{position: 'absolute', left: 0, top: 0, overflow: 'visible'}}>
@@ -125,6 +136,7 @@ export const Freeze: React.FC<SceneProps> = ({vo, a, audio, dur}) => {
       ))}
       <Cursor from={[1150, 860]} to={[120 + STUCK_X + 20, 310 + 370]} start={tLeft + 4} />
       <Sticker text="PROYEK MANGKRAK" start={tProyek} bg={C.coral} fg="#fff" rotate={-4} size={44} style={{right: 130, top: 150}} />
+      <BigWord text="FREEZE!" start={cue('Namanya freeze')} dur={26} color={C.blue} size={260} top={360} />
     </Shell>
   );
 };

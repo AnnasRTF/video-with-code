@@ -1,6 +1,7 @@
 import React from 'react';
 import {Easing, useCurrentFrame, useVideoConfig} from 'remotion';
 import {makeCue} from '../cue';
+import {focus, unfocus} from '../fx';
 import {C, F} from '../theme';
 import {Chip, Cursor, night, paper, Portrait, ramp, Saber, SaberDefs, SceneProps, Select, Shell, Sticker, Title, useEnter} from '../ui';
 
@@ -24,7 +25,17 @@ export const PickDuluan: React.FC<SceneProps> = ({vo, a, audio, dur}) => {
   const underline = ramp(frame, tQuote + 10, tQuote + 40, Easing.inOut(Easing.cubic));
   const pro = useEnter(tPro);
   return (
-    <Shell index={5} label="Draft: pick duluan" audio={audio} dur={dur}>
+    <Shell
+      vo={vo}
+      index={5}
+      label="Draft: pick duluan"
+      audio={audio}
+      dur={dur}
+      cam={{
+        keys: [focus(tFirst, 300, 450, 1.1, 0.5), unfocus(tFlex - 6), focus(tQuote, 900, 850, 1.06, 0.5)],
+        hits: [{f: tFirst, amp: 12}, {f: tNo, amp: 10}, {f: tQuote, amp: 16, flash: true}, {f: tRevisi, amp: 14}],
+      }}
+    >
       <Title text="Draft: pick duluan" />
       <div style={{...paper, position: 'absolute', left: 120, top: 300, width: 1680, height: 230, opacity: board, transform: `translateY(${(1 - board) * 50}px)`}}>
         <div style={{position: 'absolute', left: 40, top: 22, fontFamily: F.sans, fontWeight: 800, fontSize: 24, color: C.blue, letterSpacing: 4}}>TIM KAMU</div>
@@ -61,30 +72,30 @@ export const PickDuluan: React.FC<SceneProps> = ({vo, a, audio, dur}) => {
           <div key={k} style={{position: 'absolute', right: 40 + k * 150, top: 70, width: 120, height: 120, borderRadius: 26, background: 'rgba(255,77,85,0.06)', border: '3px dashed rgba(255,77,85,0.4)'}} />
         ))}
       </div>
-      <div style={{position: 'absolute', left: 120, top: 664, display: 'flex', alignItems: 'center', gap: 20}}>
+      <div style={{position: 'absolute', left: 120, top: 638, display: 'flex', alignItems: 'center', gap: 20}}>
         <Chip text="FLEKSIBEL" start={tFlex} bg={C.yellow} fg={C.ink} size={44} />
         <Chip text="TANK" start={tTank} bg={C.teal} size={34} />
         <Chip text="FIGHTER" start={tTank + 8} bg={C.coral} size={34} />
         <Chip text="+ CROWD CONTROL" start={tTank + 16} bg={C.violet} size={34} />
       </div>
-      <div style={{position: 'absolute', left: 120, top: 584}}>
+      <div style={{position: 'absolute', left: 120, top: 562}}>
         <Chip text="JANGAN MUDAH DI-COUNTER" start={tNo} bg={C.ink} size={30} />
       </div>
       {lit > 0.5 ? <Select left={146} top={364} width={148} height={148} start={tFirst + 2} color={C.yellow} /> : null}
       <Cursor from={[640, 760]} to={[300, 500]} start={tFirst + 4} />
-      <div style={{...night, position: 'absolute', left: 120, top: 780, width: 1680, height: 240, opacity: quote, transform: `translateY(${(1 - quote) * 60}px)`}}>
-        <div style={{position: 'absolute', left: 60, top: 36, fontFamily: F.sans, fontWeight: 900, fontSize: 96, color: '#fff', letterSpacing: -3}}>
+      <div style={{...night, position: 'absolute', left: 120, top: 768, width: 1680, height: 182, opacity: quote, transform: `translateY(${(1 - quote) * 60}px)`}}>
+        <div style={{position: 'absolute', left: 60, top: 16, fontFamily: F.sans, fontWeight: 900, fontSize: 96, color: '#fff', letterSpacing: -3}}>
           FIRST PICK <span style={{color: C.nCoral}}>≠</span> KEUNTUNGAN
         </div>
-        <svg width={1500} height={50} style={{position: 'absolute', left: 50, top: 152, overflow: 'visible'}}>
+        <svg width={1500} height={50} style={{position: 'absolute', left: 50, top: 118, overflow: 'visible'}}>
           <SaberDefs />
           <Saber d="M 10 25 L 900 25" progress={underline} color={C.nViolet} width={6} />
         </svg>
-        <div style={{position: 'absolute', left: 60, top: 190, fontFamily: F.sans, fontWeight: 600, fontSize: 28, color: 'rgba(255,255,255,0.7)', opacity: pro, transform: `translateY(${(1 - pro) * 14}px)`}}>
+        <div style={{position: 'absolute', left: 60, top: 140, fontFamily: F.sans, fontWeight: 600, fontSize: 28, color: 'rgba(255,255,255,0.7)', opacity: pro, transform: `translateY(${(1 - pro) * 14}px)`}}>
           Pemain jago lebih suka pick terakhir: bisa menyesuaikan diri dengan lawan.
         </div>
       </div>
-      <Sticker text="REVISI v2" start={tRevisi} bg={C.coral} fg="#fff" rotate={6} size={44} style={{right: 160, top: 760}} />
+      <Sticker text="REVISI v2" start={tRevisi} bg={C.coral} fg="#fff" rotate={6} size={44} style={{right: 160, top: 742}} />
     </Shell>
   );
 };
@@ -129,8 +140,8 @@ const Matchup: React.FC<{i: number; start: number} & (typeof MATCHUPS)[number]> 
   const p = useEnter(start);
   const line = ramp(frame, start + 10, start + 34, Easing.inOut(Easing.cubic));
   return (
-    <div style={{...paper, position: 'absolute', left: 120, top: 290 + i * 215, width: 1680, height: 190, borderRadius: 32, opacity: Math.min(1, p * 2), transform: `translateX(${(1 - p) * -100}px)`}}>
-      <div style={{position: 'absolute', left: 36, top: 32}}>
+    <div style={{...paper, position: 'absolute', left: 120, top: 290 + i * 200, width: 1680, height: 178, borderRadius: 32, opacity: Math.min(1, p * 2), transform: `translateX(${(1 - p) * -100}px)`}}>
+      <div style={{position: 'absolute', left: 36, top: 26}}>
         <Portrait hero={m.enemy} size={126} ring={RINGS[i]} />
       </div>
       <div style={{position: 'absolute', left: 190, top: 36, fontFamily: F.sans, fontWeight: 700, fontSize: 22, color: C.muted, letterSpacing: 3}}>LAWAN</div>
@@ -168,14 +179,29 @@ export const Counter: React.FC<SceneProps> = ({vo, a, audio, dur}) => {
   const {fps} = useVideoConfig();
   const cue = makeCue(vo, a, fps);
   return (
-    <Shell index={6} label="Draft: pick terakhir" audio={audio} dur={dur}>
+    <Shell
+      vo={vo}
+      index={6}
+      label="Draft: pick terakhir"
+      audio={audio}
+      dur={dur}
+      cam={{
+        keys: [
+          focus(cue('Lawan Aulus'), 960, 380, 1.07, 0.5),
+          focus(cue('Lawan Masha'), 960, 580, 1.07, 0.5),
+          focus(cue('Lawan Argus'), 960, 780, 1.07, 0.5),
+          unfocus(cue('Tapi ingat, selisih')),
+        ],
+        hits: [{f: cue('Lawan Aulus'), amp: 8}, {f: cue('Lawan Masha'), amp: 8}, {f: cue('Lawan Argus'), amp: 8}, {f: cue('Jangan kegirangan'), amp: 14, flash: true}],
+      }}
+    >
       <Title text="Draft: pick terakhir" />
       {MATCHUPS.map((m, i) => (
         <Matchup key={m.enemy} i={i} start={cue(m.cue)} {...m} />
       ))}
-      <Select left={818} top={738} width={330} height={134} start={cue('Lawan Argus') + 54} color={C.accent} />
-      <Cursor from={[1500, 980]} to={[1148, 872]} start={cue('Lawan Argus') + 48} />
-      <div style={{position: 'absolute', left: 120, top: 960}}>
+      <Select left={818} top={698} width={330} height={126} start={cue('Lawan Argus') + 54} color={C.accent} />
+      <Cursor from={[1500, 980]} to={[1148, 822]} start={cue('Lawan Argus') + 48} />
+      <div style={{position: 'absolute', left: 120, top: 888}}>
         <Chip text="DATA MLBB HUB, 9 OKT 2026. ANGKA = KEUNGGULAN WIN RATE, SELISIH KECIL" start={cue('Tapi ingat, selisih')} bg={C.violet} size={22} />
       </div>
       <Sticker text="JANGAN KEGIRANGAN" start={cue('Jangan kegirangan')} bg={C.yellow} rotate={-4} size={32} style={{right: 130, top: 170}} />

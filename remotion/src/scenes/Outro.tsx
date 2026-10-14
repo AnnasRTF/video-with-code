@@ -1,6 +1,7 @@
 import React from 'react';
 import {Easing, useCurrentFrame, useVideoConfig} from 'remotion';
 import {makeCue} from '../cue';
+import {BigWord, focus, unfocus} from '../fx';
 import {C, F} from '../theme';
 import {Check, Chip, Cursor, night, paper, ramp, RiseText, SceneProps, Shell, Slash, Sticker, Title, useEnter} from '../ui';
 
@@ -44,7 +45,18 @@ export const Outro: React.FC<SceneProps> = ({vo, a, audio, dur}) => {
   const credits = useEnter(tBiar + 20);
 
   return (
-    <Shell index={10} label="Penutup" audio={audio} dur={dur} blobs="bold">
+    <Shell
+      vo={vo}
+      index={10}
+      label="Penutup"
+      audio={audio}
+      dur={dur}
+      blobs="bold"
+      cam={{
+        keys: [focus(tKalah, 1440, 420, 1.06, 0.5), unfocus(tShare - 6)],
+        hits: [{f: tBohong, amp: 26, flash: true}, {f: tMasih, amp: 12}, {f: tBiar, amp: 10}],
+      }}
+    >
       <Title text="Ringkasnya" />
       {POINTS.map((p, i) => (
         <Point key={p.head} i={i} start={cue(p.cue)} {...p} />
@@ -88,9 +100,12 @@ export const Outro: React.FC<SceneProps> = ({vo, a, audio, dur}) => {
         </div>
       </div>
       <Cursor from={[1700, 520]} to={[1270, 872]} start={tShare + 24} />
-      <div style={{position: 'absolute', left: 120, right: 120, top: 980, textAlign: 'left', fontFamily: F.mono, fontSize: 19, color: C.muted, letterSpacing: 0.5, opacity: credits}}>
-        Gambar: milik Moonton, via MLBB Fandom Wiki. Data: MLBB Hub (13 Okt 2026), patch notes 2.2.16. Dicek 14 Okt 2026.
+      <div style={{position: 'absolute', left: 1150, width: 650, top: 112, fontFamily: F.mono, fontSize: 17, lineHeight: 1.45, color: C.muted, letterSpacing: 0.4, opacity: credits}}>
+        Gambar: milik Moonton, via MLBB Fandom Wiki.
+        <br />
+        Data: MLBB Hub (13 Okt 2026), patch notes 2.2.16. Dicek 14 Okt 2026.
       </div>
+      <BigWord text="BOHONG." start={tBohong} dur={30} color={C.coral} size={290} top={350} />
     </Shell>
   );
 };

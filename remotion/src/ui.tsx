@@ -2,6 +2,7 @@ import {evolvePath, getLength, getPointAtLength} from '@remotion/paths';
 import React from 'react';
 import {AbsoluteFill, Audio, Easing, Img, interpolate, Sequence, spring, staticFile, useCurrentFrame, useVideoConfig} from 'remotion';
 import {LEAD} from './cue';
+import {BurstLines, Cam, CameraSounds, Captions, Flash, MotionBackdrop, Sfx, useBeat, useCamera} from './fx';
 import {C, F, FRINGE} from './theme';
 
 type Mode = 'smooth' | 'pop';
@@ -60,6 +61,7 @@ export const Asterisk: React.FC<{x: number; y: number; scale: number; rot: numbe
 /** Latar putih tulang: titik halus, bentuk hitam di sudut, dan grain tipis. */
 export const Backdrop: React.FC<{blobs?: BlobMode}> = ({blobs = 'corner'}) => {
   const t = useCurrentFrame() / 30;
+  const pulse = 1 + 0.06 * useBeat().pulse;
   return (
     <AbsoluteFill style={{background: `linear-gradient(180deg, #F8F7F3 0%, ${C.bg2} 100%)`}}>
       <AbsoluteFill
@@ -73,14 +75,14 @@ export const Backdrop: React.FC<{blobs?: BlobMode}> = ({blobs = 'corner'}) => {
       />
       {blobs === 'corner' ? (
         <>
-          <Asterisk x={1990 + 14 * Math.sin(t * 0.6)} y={1160} scale={0.66} rot={t * 7} />
-          <Asterisk x={-70} y={-100} scale={0.42} rot={-t * 6} />
+          <Asterisk x={1990 + 14 * Math.sin(t * 0.6)} y={1160} scale={0.66 * pulse} rot={t * 7} />
+          <Asterisk x={-70} y={-100} scale={0.42 * pulse} rot={-t * 6} />
         </>
       ) : null}
       {blobs === 'bold' ? (
         <>
-          <Asterisk x={2045 + 12 * Math.sin(t * 0.5)} y={10} scale={0.74} rot={t * 6} />
-          <Asterisk x={-10} y={1070 + 12 * Math.cos(t * 0.5)} scale={0.8} rot={-t * 5} />
+          <Asterisk x={2045 + 12 * Math.sin(t * 0.5)} y={10} scale={0.74 * pulse} rot={t * 6} />
+          <Asterisk x={-10} y={1070 + 12 * Math.cos(t * 0.5)} scale={0.8 * pulse} rot={-t * 5} />
         </>
       ) : null}
       <AbsoluteFill style={{backgroundImage: GRAIN, opacity: 0.05}} />
@@ -149,6 +151,8 @@ export const Chip: React.FC<{
 }> = ({text, start, bg, fg = '#FFFFFF', size = 28, mode = 'pop', style}) => {
   const p = useEnter(start, mode);
   return (
+    <>
+    <Sfx name="pop" at={start} volume={0.16} />
     <div
       style={{
         display: 'inline-block',
@@ -169,6 +173,7 @@ export const Chip: React.FC<{
     >
       {text}
     </div>
+    </>
   );
 };
 
@@ -277,26 +282,38 @@ export const Hud: React.FC<{index: number; total: number; label: string; duratio
 
 export type SceneProps = {vo: string; a: number; audio?: string; dur?: number};
 
-/** Latar, progres scene, dan audio VO (mulai setelah LEAD detik). */
-export const Shell: React.FC<{index: number; label: string; audio?: string; dur?: number; blobs?: BlobMode; children: React.ReactNode}> = ({
-  index,
-  label,
-  audio,
-  dur,
-  blobs,
-  children,
-}) => {
+/** Latar bergerak, progres scene, audio VO (mulai setelah LEAD detik), kamera, dan subtitle. */
+export const Shell: React.FC<{
+  index: number;
+  label: string;
+  audio?: string;
+  dur?: number;
+  blobs?: BlobMode;
+  vo?: string;
+  cam?: Cam;
+  children: React.ReactNode;
+}> = ({index, label, audio, dur, blobs, vo, cam, children}) => {
   const {fps, durationInFrames} = useVideoConfig();
+  const total = dur ?? durationInFrames;
+  const k = useCamera(cam, total);
+  const glitch =
+    k.glitch > 0.03
+      ? `drop-shadow(${(7 * k.glitch).toFixed(1)}px 0 0 rgba(255,40,90,0.55)) drop-shadow(${(-7 * k.glitch).toFixed(1)}px 0 0 rgba(0,170,255,0.55))`
+      : undefined;
   return (
     <AbsoluteFill>
       <Backdrop blobs={blobs} />
+      <MotionBackdrop index={index} />
       {audio ? (
         <Sequence from={Math.round(LEAD * fps)}>
           <Audio src={staticFile(audio)} />
         </Sequence>
       ) : null}
-      <Hud index={index} total={10} label={label} durationInFrames={dur ?? durationInFrames} />
-      {children}
+      <Hud index={index} total={10} label={label} durationInFrames={total} />
+      <CameraSounds hits={cam?.hits} />
+      <AbsoluteFill style={{transform: `translate(${k.x}px, ${k.y}px) scale(${k.s}) rotate(${k.rot}deg)`, filter: glitch}}>{children}</AbsoluteFill>
+      <Flash amount={k.flash} />
+      {vo ? <Captions vo={vo} /> : null}
     </AbsoluteFill>
   );
 };
@@ -354,6 +371,8 @@ export const Sticker: React.FC<{
         ...style,
       }}
     >
+      <Sfx name="stamp" at={start} volume={0.3} />
+      <BurstLines start={start} color={C.ink} />
       {text}
     </div>
   );
@@ -424,6 +443,7 @@ export const Select: React.FC<{left: number; top: number; width: number; height:
   const h = 12;
   return (
     <div style={{position: 'absolute', left, top, width, height, opacity: Math.min(1, p * 3), transform: `scale(${0.92 + 0.08 * p})`, pointerEvents: 'none'}}>
+      <Sfx name="tick" at={start} volume={0.2} />
       <div style={{position: 'absolute', inset: 0, border: `2.5px dashed ${color}`, borderRadius: 4}} />
       {[
         [0, 0],
@@ -448,6 +468,7 @@ export const Cursor: React.FC<{from: [number, number]; to: [number, number]; sta
   const fade = 1 - ramp(frame, start + dur + 18, start + dur + 36);
   return (
     <svg width={1920} height={1080} style={{position: 'absolute', left: 0, top: 0, pointerEvents: 'none', opacity: fade}}>
+      <Sfx name="click" at={start + dur} volume={0.28} />
       {click > 0 && click < 1 ? <circle cx={to[0]} cy={to[1]} r={10 + 40 * click} fill="none" stroke={C.accent} strokeWidth={4} opacity={1 - click} /> : null}
       <g transform={`translate(${x} ${y}) scale(${click > 0 && click < 0.5 ? 0.88 : 1})`}>
         <path d="M 0 0 L 0 34 L 9 26 L 15 40 L 21 37 L 15 24 L 27 24 Z" fill={C.ink} stroke="#fff" strokeWidth={2.5} strokeLinejoin="round" />

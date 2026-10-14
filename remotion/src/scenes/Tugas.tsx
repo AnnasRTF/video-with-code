@@ -2,6 +2,7 @@ import {getPointAtLength} from '@remotion/paths';
 import React from 'react';
 import {useCurrentFrame, useVideoConfig} from 'remotion';
 import {makeCue} from '../cue';
+import {BigWord, focus, unfocus} from '../fx';
 import {EXP_LANE} from '../mapdata';
 import {C, F} from '../theme';
 import {Chip, Cursor, MapPanel, paper, ramp, Saber, SceneProps, Select, Shell, Strike, Title, useEnter} from '../ui';
@@ -52,7 +53,14 @@ export const Tugas: React.FC<SceneProps> = ({vo, a, audio, dur}) => {
   const pt = getPointAtLength(EXP_LANE, 330 + 40 * Math.sin(frame / 22));
   const solo = useEnter(tSolo, 'pop');
   return (
-    <Shell index={2} label="Tugas XP lane" audio={audio} dur={dur}>
+    <Shell
+      vo={vo}
+      index={2}
+      label="Tugas XP lane"
+      audio={audio}
+      dur={dur}
+      cam={{keys: [focus(tLane, 400, 590, 1.08, 0.5), unfocus(cue('Satu,') - 6)], hits: [{f: tSolo, amp: 12}, {f: tGone, amp: 18, flash: true}]}}
+    >
       <Title text="Tugas XP lane" />
       <MapPanel left={120} top={300} size={560} enter={map}>
         <Saber d={EXP_LANE} progress={lane} color="#2EE6C5" width={7} head={lane < 0.99} />
@@ -65,7 +73,7 @@ export const Tugas: React.FC<SceneProps> = ({vo, a, audio, dur}) => {
       </MapPanel>
       {solo > 0.02 && pt ? <Select left={142 + pt.x * 1.094 - 46} top={322 + pt.y * 1.094 - 46} width={92} height={92} start={tSolo + 8} color={C.blue} /> : null}
       <Cursor from={[760, 820]} to={[330, 520]} start={tSolo + 14} />
-      <div style={{position: 'absolute', left: 150, top: 918}}>
+      <div style={{position: 'absolute', left: 150, top: 894}}>
         <Chip text="KAMU, SOLO DI LANE ATAS" start={tSolo} bg={C.blue} size={26} />
       </div>
       {ROWS.map((r, i) => (
@@ -74,6 +82,8 @@ export const Tugas: React.FC<SceneProps> = ({vo, a, audio, dur}) => {
       {ROWS.map((r, i) => (
         <Strike key={r.n} left={956} top={355 + i * 200} width={520} progress={ramp(frame, tGone + i * 8, tGone + 22 + i * 8)} />
       ))}
+      <BigWord text="SOLO." start={tSolo} dur={24} color={C.blue} size={300} top={340} />
+      <BigWord text="ILANG!" start={tGone} dur={26} color={C.coral} size={300} top={340} />
     </Shell>
   );
 };

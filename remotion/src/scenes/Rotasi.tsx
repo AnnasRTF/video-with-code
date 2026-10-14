@@ -1,6 +1,7 @@
 import React from 'react';
 import {Easing, Img, staticFile, useCurrentFrame, useVideoConfig} from 'remotion';
 import {makeCue} from '../cue';
+import {BigWord, focus, unfocus} from '../fx';
 import {EXP_LANE, GOLD_LANE, LORD, PIT} from '../mapdata';
 import {C, F} from '../theme';
 import {Chip, MapPanel, Marquee, paper, ramp, Saber, SceneProps, Shell, Sticker, Title, useEnter} from '../ui';
@@ -115,7 +116,33 @@ export const Rotasi: React.FC<SceneProps> = ({vo, a, audio, dur}) => {
   ];
 
   return (
-    <Shell index={9} label="Rotasi dan objektif" audio={audio} dur={dur}>
+    <Shell
+      vo={vo}
+      index={9}
+      label="Rotasi dan objektif"
+      audio={audio}
+      dur={dur}
+      cam={{
+        keys: [
+          focus(tTurtle, 1260, 450, 1.07, 0.5),
+          focus(tAllied, 390, 590, 1.1, 0.55),
+          focus(tLord, 1260, 450, 1.07, 0.5),
+          unfocus(tPress),
+          focus(tHilang, 1100, 700, 1.06, 0.5),
+          unfocus(tMati - 6),
+        ],
+        hits: [
+          {f: tTurtle, amp: 12},
+          {f: tRapat, amp: 14},
+          {f: tAllied, amp: 14},
+          {f: tLord, amp: 18, flash: true},
+          {f: tHilang, amp: 12},
+          {f: tJungle, amp: 12},
+          {f: tWisp, amp: 12},
+          {f: tMati, amp: 18, flash: true},
+        ],
+      }}
+    >
       <Title text="Rotasi dan objektif" />
       <MapPanel left={120} top={300} size={540} enter={map}>
         {frame >= tTurtle ? (
@@ -164,7 +191,7 @@ export const Rotasi: React.FC<SceneProps> = ({vo, a, audio, dur}) => {
           </g>
         ) : null}
       </MapPanel>
-      <div style={{position: 'absolute', left: 150, top: 940, display: 'flex', gap: 14}}>
+      <div style={{position: 'absolute', left: 150, top: 896, display: 'flex', gap: 14}}>
         <Chip text="TURTLE: 2:00, LALU TIAP 2 MENIT" start={tTurtle + 6} bg={C.teal} size={22} />
       </div>
       <Timeline tTurtle={tTurtle} tLord={tLord} />
@@ -173,6 +200,7 @@ export const Rotasi: React.FC<SceneProps> = ({vo, a, audio, dur}) => {
       <Situation i={2} start={tWisp} q="Ada wisp di peta?" act="BUKA POSISI" color={C.blue} />
       <Sticker text="RAPAT BOLEH MOLOR, TURTLE NGGAK" start={tRapat} bg={C.yellow} rotate={-3} size={34} style={{left: 1010, top: 640, opacity: 1 - ramp(frame, tAllied - 4, tAllied + 10)}} />
       <Sticker text="BUKAN SALAH JUNGLER" start={tMati} bg={C.coral} fg="#fff" rotate={-4} size={44} style={{right: 130, top: 150}} />
+      <BigWord text="JANGAN TELAT!" start={cue('Jangan telat')} dur={34} color={C.coral} size={200} top={380} />
     </Shell>
   );
 };
