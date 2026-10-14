@@ -4,7 +4,7 @@ import {useCurrentFrame, useVideoConfig} from 'remotion';
 import {makeCue} from '../cue';
 import {EXP_LANE} from '../mapdata';
 import {C, F} from '../theme';
-import {Chip, MapPanel, paper, ramp, Saber, SceneProps, Shell, Strike, Title, useEnter} from '../ui';
+import {Chip, Cursor, MapPanel, paper, ramp, Saber, SceneProps, Select, Shell, Strike, Title, useEnter} from '../ui';
 import {Easing} from 'remotion';
 
 const ROWS = [
@@ -63,6 +63,8 @@ export const Tugas: React.FC<SceneProps> = ({vo, a, audio, dur}) => {
           </>
         ) : null}
       </MapPanel>
+      {solo > 0.02 && pt ? <Select left={142 + pt.x * 1.094 - 46} top={322 + pt.y * 1.094 - 46} width={92} height={92} start={tSolo + 8} color={C.blue} /> : null}
+      <Cursor from={[760, 820]} to={[330, 520]} start={tSolo + 14} />
       <div style={{position: 'absolute', left: 150, top: 918}}>
         <Chip text="KAMU, SOLO DI LANE ATAS" start={tSolo} bg={C.blue} size={26} />
       </div>

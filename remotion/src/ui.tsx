@@ -39,7 +39,7 @@ const GRAIN =
 export type BlobMode = 'none' | 'corner' | 'bold';
 
 /** Bentuk hitam organik (bintang berujung bulat) dengan tepi RGB-split, seperti di video referensi. */
-const Asterisk: React.FC<{x: number; y: number; scale: number; rot: number}> = ({x, y, scale, rot}) => (
+export const Asterisk: React.FC<{x: number; y: number; scale: number; rot: number}> = ({x, y, scale, rot}) => (
   <div
     style={{
       position: 'absolute',
@@ -79,8 +79,8 @@ export const Backdrop: React.FC<{blobs?: BlobMode}> = ({blobs = 'corner'}) => {
       ) : null}
       {blobs === 'bold' ? (
         <>
-          <Asterisk x={1900 + 20 * Math.sin(t * 0.5)} y={120} scale={1.15} rot={t * 6} />
-          <Asterisk x={50} y={1010 + 16 * Math.cos(t * 0.5)} scale={1.05} rot={-t * 5} />
+          <Asterisk x={2045 + 12 * Math.sin(t * 0.5)} y={10} scale={0.74} rot={t * 6} />
+          <Asterisk x={-10} y={1070 + 12 * Math.cos(t * 0.5)} scale={0.8} rot={-t * 5} />
         </>
       ) : null}
       <AbsoluteFill style={{backgroundImage: GRAIN, opacity: 0.05}} />
@@ -455,3 +455,86 @@ export const Cursor: React.FC<{from: [number, number]; to: [number, number]; sta
     </svg>
   );
 };
+
+/** Pembungkus kotak seleksi: kotaknya mengikuti ukuran isi, jadi tidak perlu mengukur teks. */
+export const Marquee: React.FC<{start: number; color?: string; pad?: number; children: React.ReactNode; style?: React.CSSProperties}> = ({
+  start,
+  color = C.ink,
+  pad = 18,
+  children,
+  style,
+}) => {
+  const p = useEnter(start);
+  const h = 13;
+  return (
+    <div style={{position: 'relative', display: 'inline-block', ...style}}>
+      {children}
+      <div
+        style={{
+          position: 'absolute',
+          left: -pad,
+          right: -pad,
+          top: -pad,
+          bottom: -pad,
+          opacity: Math.min(1, p * 3),
+          transform: `scale(${0.94 + 0.06 * p})`,
+          pointerEvents: 'none',
+        }}
+      >
+        <div style={{position: 'absolute', inset: 0, border: `2.5px dashed ${color}`}} />
+        {[
+          [0, 0],
+          [100, 0],
+          [0, 100],
+          [100, 100],
+        ].map(([x, y], i) => (
+          <div key={i} style={{position: 'absolute', left: `${x}%`, top: `${y}%`, marginLeft: -h / 2, marginTop: -h / 2, width: h, height: h, background: '#fff', border: `2.5px solid ${color}`}} />
+        ))}
+      </div>
+    </div>
+  );
+};
+
+/** Kartu melayang miring 3D: bergoyang pelan supaya terasa hidup. */
+export const Float: React.FC<{phase?: number; tilt?: number; children: React.ReactNode; style?: React.CSSProperties}> = ({phase = 0, tilt = -9, children, style}) => {
+  const t = useCurrentFrame() / 30 + phase;
+  return (
+    <div
+      style={{
+        transform: `perspective(1800px) rotateY(${tilt + 2.2 * Math.sin(t * 0.9)}deg) rotateX(${2 * Math.cos(t * 0.7)}deg) translateY(${6 * Math.sin(t * 1.1)}px)`,
+        transformStyle: 'preserve-3d',
+        ...style,
+      }}
+    >
+      {children}
+    </div>
+  );
+};
+
+/** Menara sederhana untuk peta dan diagram lane. */
+export const Tower: React.FC<{x: number; y: number; s: number; color: string}> = ({x, y, s, color}) => (
+  <g transform={`translate(${x} ${y}) scale(${s})`}>
+    <polygon points="-22,-4 22,-4 0,-34" fill={color} />
+    <rect x={-15} y={-4} width={30} height={34} rx={4} fill={color} />
+    <rect x={-6} y={10} width={12} height={20} rx={3} fill="rgba(8,10,34,0.65)" />
+  </g>
+);
+
+/** Centang yang tergambar sebagai garis saber kecil. */
+export const Check: React.FC<{progress: number; color: string; size?: number}> = ({progress, color, size = 64}) => (
+  <svg width={size} height={size} viewBox="0 0 64 64" style={{overflow: 'visible'}}>
+    <SaberDefs />
+    <Saber d="M 10 34 L 26 50 L 54 14" progress={progress} color={color} width={6} head={false} />
+  </svg>
+);
+
+/** Garis saber yang mencoret isi di dalamnya, panjangnya mengikuti lebar isi. */
+export const Slash: React.FC<{progress: number; color?: string; top?: string; children: React.ReactNode}> = ({progress, color = C.coral, top = '54%', children}) => (
+  <div style={{position: 'relative', display: 'inline-block'}}>
+    {children}
+    <svg viewBox="0 0 1000 40" preserveAspectRatio="none" style={{position: 'absolute', left: -16, width: 'calc(100% + 32px)', top, height: 40, marginTop: -20, overflow: 'visible', pointerEvents: 'none'}}>
+      <SaberDefs />
+      <Saber d="M 0 20 L 1000 20" progress={progress} color={color} width={5} head={false} />
+    </svg>
+  </div>
+);

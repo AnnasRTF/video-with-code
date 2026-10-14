@@ -1,8 +1,8 @@
 import React from 'react';
-import {AbsoluteFill, Easing, useCurrentFrame, useVideoConfig} from 'remotion';
+import {Easing, useCurrentFrame, useVideoConfig} from 'remotion';
 import {makeCue} from '../cue';
 import {C, F} from '../theme';
-import {Chip, paper, ramp, RiseText, Saber, SaberDefs, SceneProps, Shell, Sticker, Strike, useEnter} from '../ui';
+import {Chip, Cursor, Marquee, paper, ramp, RiseText, Saber, SaberDefs, SceneProps, Select, Shell, Sticker, useEnter} from '../ui';
 
 const CHAT = [
   {who: 'JUNGLE', msg: 'XP lane ngapain??', color: C.teal},
@@ -40,10 +40,10 @@ export const Hook: React.FC<SceneProps> = ({vo, a, audio, dur}) => {
   const underline = ramp(frame, tTitle + 14, tTitle + 40, Easing.inOut(Easing.cubic));
 
   return (
-    <Shell index={1} label="Hook" audio={audio} dur={dur}>
+    <Shell index={1} label="Hook" audio={audio} dur={dur} blobs="bold">
       {/* fase A: skor dan chat */}
       <div style={{opacity: phaseA}}>
-        <div style={{...paper, position: 'absolute', left: 140, top: 250, width: 760, height: 280, opacity: board, transform: `translateY(${(1 - board) * 50}px)`}}>
+        <div style={{...paper, position: 'absolute', left: 120, top: 250, width: 860, height: 340, opacity: board, transform: `translateY(${(1 - board) * 50}px)`}}>
           {[
             {who: 'KAMU', color: C.blue, v: 3, fill: 0.46},
             {who: 'LAWAN', color: C.coral, v: 4, fill: 0.7},
@@ -51,20 +51,21 @@ export const Hook: React.FC<SceneProps> = ({vo, a, audio, dur}) => {
             const isEnemy = i === 1;
             const popped = isEnemy ? 1 + 0.35 * (1 - Math.min(1, lv)) : 1;
             return (
-              <div key={r.who} style={{position: 'absolute', left: 48, right: 48, top: 40 + i * 110}}>
-                <div style={{fontFamily: F.sans, fontWeight: 800, fontSize: 34, color: C.ink}}>{r.who}</div>
-                <div style={{position: 'absolute', right: 0, top: -14, fontFamily: F.sans, fontWeight: 900, fontSize: 62 * popped, color: r.color}}>
+              <div key={r.who} style={{position: 'absolute', left: 52, right: 52, top: 44 + i * 150}}>
+                <div style={{fontFamily: F.sans, fontWeight: 800, fontSize: 38, color: C.ink}}>{r.who}</div>
+                <div style={{position: 'absolute', right: 0, top: -26, fontFamily: F.sans, fontWeight: 900, fontSize: 92 * popped, letterSpacing: -3, color: r.color}}>
                   LV {isEnemy && frame < tLv ? 3 : r.v}
                 </div>
-                <div style={{marginTop: 18, height: 14, borderRadius: 7, background: 'rgba(18,21,40,0.08)'}}>
-                  <div style={{width: `${(isEnemy && frame < tLv ? 0.14 : r.fill) * 100}%`, height: '100%', borderRadius: 7, background: r.color, boxShadow: `0 4px 14px ${r.color}66`}} />
+                <div style={{marginTop: 26, height: 18, borderRadius: 9, background: 'rgba(18,21,40,0.08)'}}>
+                  <div style={{width: `${(isEnemy && frame < tLv ? 0.14 : r.fill) * 100}%`, height: '100%', borderRadius: 9, background: r.color, boxShadow: `0 4px 14px ${r.color}66`}} />
                 </div>
               </div>
             );
           })}
         </div>
-        <Sticker text="TURTLE DIAMBIL" start={tTurtle} bg={C.coral} fg="#fff" rotate={-5} size={50} style={{left: 200, top: 600}} />
-        <Sticker text="TURRET ROBOH" start={tTurret} bg={C.yellow} rotate={4} size={50} style={{left: 330, top: 740}} />
+        <Sticker text="TURTLE DIAMBIL" start={tTurtle} bg={C.coral} fg="#fff" rotate={-5} size={52} style={{left: 190, top: 660}} />
+        <Sticker text="TURRET ROBOH" start={tTurret} bg={C.yellow} rotate={4} size={52} style={{left: 360, top: 810}} />
+        {frame >= tLv - 2 ? <Select left={714} top={406} width={240} height={110} start={tLv} color={C.coral} /> : null}
         {CHAT.map((c, i) => {
           const p = useEnter(tChat + i * 16);
           return (
@@ -73,9 +74,9 @@ export const Hook: React.FC<SceneProps> = ({vo, a, audio, dur}) => {
               style={{
                 ...paper,
                 position: 'absolute',
-                left: 1000,
-                top: 270 + i * 130,
-                width: 780,
+                left: 1100,
+                top: 270 + i * 150,
+                width: 700,
                 height: 96,
                 borderRadius: 28,
                 opacity: Math.min(1, p * 2),
@@ -125,11 +126,13 @@ export const Hook: React.FC<SceneProps> = ({vo, a, audio, dur}) => {
       ) : null}
 
       {/* fase C: judul */}
-      <AbsoluteFill style={{justifyContent: 'center', alignItems: 'center'}}>
-        <div style={{position: 'absolute', top: 330}}>
-          <RiseText text="XP LANE KEBAL" start={tTitle} size={176} />
-        </div>
-      </AbsoluteFill>
+      <div style={{position: 'absolute', left: 0, right: 0, top: 300, display: 'flex', justifyContent: 'center', gap: 56}}>
+        <RiseText text="XP LANE" start={tTitle} size={190} fringe />
+        <Marquee start={tTitle + 40} color={C.accent} pad={20}>
+          <RiseText text="KEBAL" start={tTitle + 8} size={190} color={C.accent} fringe />
+        </Marquee>
+      </div>
+      <Cursor from={[1500, 800]} to={[1706, 524]} start={tTitle + 34} />
       <svg width={1400} height={80} style={{position: 'absolute', left: 260, top: 590, overflow: 'visible'}}>
         <SaberDefs />
         <Saber d="M 120 40 L 1280 40" progress={underline} color={C.coral} width={7} />

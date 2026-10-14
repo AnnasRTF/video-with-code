@@ -1,10 +1,8 @@
 import React from 'react';
-import {AbsoluteFill, Audio, Easing, Img, interpolate, Sequence, staticFile, useCurrentFrame, useVideoConfig} from 'remotion';
-import {LEAD, makeCue} from '../cue';
+import {Easing, Img, interpolate, staticFile, useCurrentFrame, useVideoConfig} from 'remotion';
+import {makeCue} from '../cue';
 import {C, F} from '../theme';
-import {Backdrop, Chip, Hud, night, paper, Portrait, RiseText, Saber, SaberDefs, useEnter} from '../ui';
-
-export type SceneProps = {vo: string; a: number; audio?: string};
+import {Chip, Cursor, night, paper, Portrait, Saber, SaberDefs, SceneProps, Select, Shell, Title, useEnter} from '../ui';
 
 const ROWS = [
   {hero: 'aulus', name: 'AULUS', wr: 59.97, cue: 'Aulus sama Masha', delay: 0, ring: C.coral},
@@ -136,7 +134,7 @@ const Slope: React.FC<{start: number; banStart: number}> = ({start, banStart}) =
         })}
         <g opacity={ease(start + 16, start + 30)}>
           <circle cx={X1} cy={yOf(54.1)} r={9} fill={C.nYellow} />
-          <text x={X1 - 22} y={yOf(54.1) + 6} textAnchor="end" fill={C.nYellow} fontFamily={F.sans} fontWeight={800} fontSize={20}>
+          <text x={X1 + 18} y={yOf(54.1) + 7} textAnchor="start" fill={C.nYellow} fontFamily={F.sans} fontWeight={800} fontSize={20}>
             GLOO 54,10
           </text>
         </g>
@@ -169,9 +167,9 @@ const Slope: React.FC<{start: number; banStart: number}> = ({start, banStart}) =
 };
 
 /** Scene 4: hero XP lane teratas menurut MLBB Hub (13 Okt 2026). */
-export const Hero: React.FC<SceneProps> = ({vo, a, audio}) => {
+export const Hero: React.FC<SceneProps> = ({vo, a, audio, dur}) => {
   const frame = useCurrentFrame();
-  const {fps, durationInFrames} = useVideoConfig();
+  const {fps} = useVideoConfig();
   const cue = makeCue(vo, a, fps);
   const tData = cue('ini data');
   const tDua = cue('Dua hero XP lane');
@@ -186,10 +184,9 @@ export const Hero: React.FC<SceneProps> = ({vo, a, audio}) => {
     extrapolateRight: 'clamp',
     easing: Easing.out(Easing.cubic),
   });
-  const ghost = useEnter(tDua - 10);
   const note = useEnter(tNote);
+  const panelIn = useEnter(cue('Dua hero XP lane') - 14);
   const survey = useEnter(tSurvey, 'pop');
-  const underline = interpolate(frame, [8, 40], [0, 1], {extrapolateRight: 'clamp', easing: Easing.out(Easing.cubic)});
 
   const big = (value: string, gradient: string, opacity: number, y: number) => (
     <div
@@ -214,25 +211,8 @@ export const Hero: React.FC<SceneProps> = ({vo, a, audio}) => {
   );
 
   return (
-    <AbsoluteFill>
-      <Backdrop />
-      {audio ? (
-        <Sequence from={Math.round(LEAD * fps)}>
-          <Audio src={staticFile(audio)} />
-        </Sequence>
-      ) : null}
-      <Hud index={4} total={10} label="Hero XP lane" durationInFrames={durationInFrames} />
-
-      <div style={{position: 'absolute', left: -260, top: 330, width: 900, height: 900, borderRadius: '50%', border: '2px solid rgba(18,21,40,0.05)', opacity: ghost}} />
-      <div style={{position: 'absolute', left: -140, top: 450, width: 660, height: 660, borderRadius: '50%', border: '2px solid rgba(91,61,245,0.14)', opacity: ghost}} />
-
-      <div style={{position: 'absolute', left: 120, top: 104}}>
-        <RiseText text="Hero XP lane" start={4} size={98} />
-      </div>
-      <svg width={900} height={60} style={{position: 'absolute', left: 110, top: 214, overflow: 'visible'}}>
-        <SaberDefs />
-        <Saber d="M 10 30 L 640 30" progress={underline} color={C.violet} width={5} />
-      </svg>
+    <Shell index={4} label="Hero XP lane" audio={audio} dur={dur}>
+      <Title text="Hero XP lane" />
       <div style={{position: 'absolute', left: 120, top: 262, display: 'flex', gap: 16}}>
         <Chip text="DATA: MLBB HUB" start={tData} bg={C.ink} size={22} />
         <Chip text="13 OKTOBER 2026" start={tData + 8} bg={C.violet} size={22} />
@@ -256,7 +236,7 @@ export const Hero: React.FC<SceneProps> = ({vo, a, audio}) => {
         </div>
       </div>
 
-      <div style={{...paper, position: 'absolute', left: 960, top: 330, width: GW, height: GH, opacity: 1 - swap, transform: `translateX(${-swap * 140}px)`}}>
+      <div style={{...paper, position: 'absolute', left: 960, top: 330, width: GW, height: GH, opacity: (1 - swap) * panelIn, transform: `translateX(${-swap * 140 + (1 - panelIn) * 110}px)`}}>
         {ROWS.map((r, i) => (
           <Row key={r.hero} i={i} start={cue(r.cue) + r.delay} {...r} />
         ))}
@@ -264,6 +244,8 @@ export const Hero: React.FC<SceneProps> = ({vo, a, audio}) => {
       </div>
       {swap > 0.02 ? <Slope start={tBan - 4} banStart={tBan + 70} /> : null}
 
+      {swap > 0.5 ? <Select left={106} top={648} width={470} height={70} start={tBan + 28} color={C.coral} /> : null}
+      <Cursor from={[760, 900]} to={[576, 718]} start={tBan + 22} />
       <div style={{position: 'absolute', left: 120, top: 960, display: 'flex', gap: 16}}>
         <Chip text="1 HERO UTAMA" start={tPick} bg={C.violet} size={28} />
         <Chip text="+ 1 CADANGAN" start={tPick + 10} bg={C.teal} size={28} />
@@ -290,6 +272,6 @@ export const Hero: React.FC<SceneProps> = ({vo, a, audio}) => {
       >
         BAGUS DI KERTAS
       </div>
-    </AbsoluteFill>
+    </Shell>
   );
 };

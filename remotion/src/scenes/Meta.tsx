@@ -3,15 +3,7 @@ import {Easing, Img, staticFile, useCurrentFrame, useVideoConfig} from 'remotion
 import {makeCue} from '../cue';
 import {PIT} from '../mapdata';
 import {C, F} from '../theme';
-import {Chip, MapPanel, paper, Portrait, ramp, Saber, SaberDefs, SceneProps, Shell, Sticker, Strike, Title, useEnter} from '../ui';
-
-const Tower: React.FC<{x: number; y: number; s: number; color: string}> = ({x, y, s, color}) => (
-  <g transform={`translate(${x} ${y}) scale(${s})`}>
-    <polygon points="-22,-4 22,-4 0,-34" fill={color} />
-    <rect x={-15} y={-4} width={30} height={34} rx={4} fill={color} />
-    <rect x={-6} y={10} width={12} height={20} rx={3} fill="rgba(8,10,34,0.65)" />
-  </g>
-);
+import {Chip, Cursor, MapPanel, paper, Portrait, ramp, Saber, SaberDefs, SceneProps, Select, Shell, Sticker, Strike, Title, Tower, useEnter} from '../ui';
 
 const Callout: React.FC<{
   start: number;
@@ -71,6 +63,8 @@ export const Meta: React.FC<SceneProps> = ({vo, a, audio, dur}) => {
     <Shell index={3} label="Meta Season 42" audio={audio} dur={dur}>
       <Title text="Meta Season 42" />
 
+      {seasonOut < 1 ? <Select left={160} top={660} width={430} height={130} start={tS + 30} color={C.accent} /> : null}
+      <Cursor from={[880, 940]} to={[590, 790]} start={tS + 24} />
       {/* kiri: musim, lalu callout peta */}
       {seasonOut < 1 ? (
         <div style={{...paper, position: 'absolute', left: 120, top: 300, width: 820, height: 580, opacity: Math.min(1, season * 2) * (1 - seasonOut), transform: `translateY(${(1 - season) * 50}px)`}}>
